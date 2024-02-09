@@ -14,7 +14,6 @@ const Product = ({products}: any) => {
       <View style={styles.secondInnerContainer}>
         <Text style={styles.title}>{products.title}</Text>
         <Text style={styles.description}>{products.description}</Text>
-        <Text>{products.rating}</Text>
         <Text style={styles.price}>${products.price}</Text>
       </View>
     </Pressable>

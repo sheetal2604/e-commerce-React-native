@@ -7,22 +7,11 @@ import {addItemToFavorite} from '../redux/favorites';
 const ProductDetails = ({route}: any) => {
   const {products} = route.params;
   const images = products.images;
-  const imagesArray = images.map((image: any, index: any) => ({
+  const imagesArray = images.map((image: string, index: number) => ({
     id: index,
     imgURL: image,
   }));
   const dispatch = useDispatch();
-  // const handleAddItemsToCart = products => {
-  //   dispatch(addItem(products));
-  // };
-  // const handleAddItemsToFavorites = products => {
-  //   console.log(products, 'products');
-  //   if (products) {
-  //     dispatch(addItemToFavorite(products));
-
-  //   }
-  // };
-
   return (
     <View>
       <View>

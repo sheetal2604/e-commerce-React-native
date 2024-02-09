@@ -5,13 +5,18 @@ import {
   TextInput,
   StyleSheet,
   SafeAreaView,
-  ActivityIndicator,
 } from 'react-native';
-import useProductCategory from '../utils/useProductCategory';
 import Product from './Product';
+import {useSelector, useDispatch} from 'react-redux';
+import {productData} from '../redux/productSlice';
+import Logout from './Logout';
 const Body = () => {
-  const json = useProductCategory();
-  const productList = json.products;
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(productData());
+  }, [dispatch]);
+  const data = useSelector(state => state.products.products);
+  const productList = data.products;
   const [filteredList, setFilteredList] = useState(productList);
   const [searchTerm, setSearchTerm] = useState('');
   const onHandleSearch = (text: any) => {
@@ -19,13 +24,14 @@ const Body = () => {
   };
   const filteredData = () => {
     let latestData = productList;
-    latestData = latestData?.filter(list =>
+    latestData = latestData?.filter((list: any) =>
       list.title.toLowerCase().includes(searchTerm),
     );
     setFilteredList(latestData);
   };
   useEffect(() => {
     filteredData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, productList]);
 
   return (
@@ -36,15 +42,9 @@ const Body = () => {
           style={styles.searchBar}
           onChangeText={onHandleSearch}
         />
+        <Logout />
       </View>
-
       <View>
-        {!productList && (
-          <ActivityIndicator
-            size="large"
-            animating={productList ? false : true}
-          />
-        )}
         <FlatList
           data={filteredList}
           renderItem={itemData => <Product products={itemData.item} />}
@@ -64,12 +64,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginVertical: 15,
     marginHorizontal: 10,
-    padding: 10,
+    padding: 8,
     fontSize: 16,
     backgroundColor: 'white',
+    width: 300,
   },
   innerContainer: {
     backgroundColor: '#00CED1',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
   listContent: {
     paddingBottom: 200,

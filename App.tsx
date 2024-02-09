@@ -6,7 +6,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from './screens/Login';
@@ -18,15 +18,41 @@ import Favorites from './screens/Favorites';
 import Cart from './screens/Cart';
 import {Provider} from 'react-redux';
 import appStore from './redux/appStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 
 function App(): React.JSX.Element {
   const Stack = createNativeStackNavigator();
   const BottomTabs = createBottomTabNavigator();
+  const [initialRoute, setInitialRoute] = useState<
+    'login' | 'HomeTabs' | 'loading'
+  >('loading');
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
 
+  const checkLoginStatus = async () => {
+    try {
+      const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+      setInitialRoute(isLoggedIn === 'true' ? 'HomeTabs' : 'login');
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const HomeTabs = () => {
     return (
       <Provider store={appStore}>
-        <BottomTabs.Navigator>
+        <BottomTabs.Navigator
+          screenOptions={{
+            tabBarIconStyle: {display: 'none'},
+            tabBarLabelStyle: {
+              fontSize: 16,
+              padding: 8,
+              margin: 4,
+            },
+            tabBarActiveTintColor: 'blue',
+            tabBarInactiveTintColor: '#555',
+          }}>
           <BottomTabs.Screen
             name="home"
             component={Home}
@@ -48,10 +74,17 @@ function App(): React.JSX.Element {
       </Provider>
     );
   };
+  if (initialRoute === 'loading') {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
   return (
     <Provider store={appStore}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName={initialRoute}>
           <Stack.Screen
             name="login"
             component={Login}
@@ -63,15 +96,11 @@ function App(): React.JSX.Element {
             options={{headerShown: false}}
           />
           <Stack.Screen
-            name="homeTabs"
+            name="HomeTabs"
             component={HomeTabs}
             options={{headerShown: false}}
           />
-          <Stack.Screen
-            name="productDetails"
-            component={ProductDetails}
-            // options={{headerShown: false}}
-          />
+          <Stack.Screen name="productDetails" component={ProductDetails} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
@@ -79,3 +108,11 @@ function App(): React.JSX.Element {
 }
 
 export default App;
+
+const styles = StyleSheet.create({
+  loader: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+});

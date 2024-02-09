@@ -44,17 +44,16 @@ const Login = ({navigation}: any) => {
       const jsonValue = await AsyncStorage.getItem('userData');
 
       let jsonData = await JSON.parse(jsonValue);
-      // console.log(jsonData,"json");
       if (
         jsonData.email === loginDetails.email &&
         jsonData.password === loginDetails.password
       ) {
-        navigation.navigate('homeTabs');
+        await AsyncStorage.setItem('isLoggedIn', 'true');
+        navigation.navigate('HomeTabs');
       } else {
         setInvalid('Invalid email or password!');
       }
     } catch (e) {
-      // error reading value
       console.log(e);
     }
   };

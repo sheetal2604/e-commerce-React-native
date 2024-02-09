@@ -1,12 +1,5 @@
 import React, {useMemo} from 'react';
-import {
-  View,
-  FlatList,
-  Text,
-  StyleSheet,
-  Button,
-  SafeAreaView,
-} from 'react-native';
+import {View, FlatList, Text, StyleSheet, SafeAreaView} from 'react-native';
 import {useSelector} from 'react-redux';
 import CartItems from '../components/CartItems';
 
@@ -14,7 +7,7 @@ const Cart = () => {
   const cartItems = useSelector(state => state.cart);
   const totalPrice = useMemo(() => {
     return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
+      (total: any, item: any) => total + item.price * item.quantity,
       0,
     );
   }, [cartItems]);
